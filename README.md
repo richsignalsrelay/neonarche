@@ -52,6 +52,16 @@ json
     { "action": "assert", "selector": "#dashboard" }
   ]
 }
+**Local development setup**
+
+Copy `.env.example` to `.env` and fill in your local Postgres connection string:
+
+```
+cp .env.example .env
+```
+
+`.env` is gitignored — never commit it. `DB_URL` is read by the collector and the dashboard API to connect to the `fact_store` Postgres database.
+
 **Contributing**
 
 Feedback and issues welcome. This is an early-stage project — the entity model in particular is still open to change based on real adopter feedback.

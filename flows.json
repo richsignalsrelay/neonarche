@@ -1,0 +1,15 @@
+{
+  "flows": [
+    {
+      "id": "login-happy-path",
+      "criticality": "high",
+      "steps": [
+        { "action": "navigate", "url": "/login" },
+        { "action": "input", "selector": "#email", "value": "${PW_TEST_USER}" },
+        { "action": "input", "selector": "#password", "value": "${PW_TEST_PASSWORD}" },
+        { "action": "click", "selector": "#submit" },
+        { "action": "assert", "selector": "#dashboard" }
+      ]
+    }
+  ]
+}

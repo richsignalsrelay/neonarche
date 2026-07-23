@@ -1,3 +1,5 @@
 encore/
 .DS_Store
 .claude/
+*.md
+.env
