@@ -7,7 +7,7 @@ CREATE TABLE fact_store (
   layer VARCHAR(50) NOT NULL,            -- "playwright" or "synthetics"
   region VARCHAR(100),                   -- NULL for playwright, e.g. "eu-west-1" for synthetics
   status VARCHAR(20) NOT NULL,           -- "pass" or "fail"
-  execution_id VARCHAR(255),             -- unique run ID for traceability
+  execution_id VARCHAR(255) NOT NULL,    -- unique run ID for traceability; every producer generates one
   executed_at TIMESTAMP NOT NULL,        -- when the flow was executed
   recorded_at TIMESTAMP NOT NULL DEFAULT NOW(), -- when the fact was ingested
   error_message TEXT,                    -- populated when status = 'fail'
@@ -17,7 +17,6 @@ CREATE TABLE fact_store (
 CREATE INDEX idx_fact_store_flow_layer_executed
   ON fact_store (flow_id, layer, executed_at);
 
--- execution_id is the idempotency key the COLL-001 collector upserts on.
+-- execution_id is the idempotency key the COLL-001 collector upserts on (ON CONFLICT target).
 CREATE UNIQUE INDEX idx_fact_store_execution_id
-  ON fact_store (execution_id)
-  WHERE execution_id IS NOT NULL;
+  ON fact_store (execution_id);

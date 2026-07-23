@@ -3,3 +3,5 @@ encore/
 .claude/
 *.md
 .env
+node_modules/
+artifacts/

@@ -1,0 +1,15 @@
+{
+  "name": "one-pane-three-stories",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "collector": "node collector/index.js",
+    "collector:once": "node collector/index.js --once",
+    "validate-flows": "node scripts/validate-flows.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3",
+    "pg": "^8.11.5"
+  }
+}
