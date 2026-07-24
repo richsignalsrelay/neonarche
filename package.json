@@ -12,7 +12,10 @@
     "dashboard:frontend": "npm --prefix dashboard/frontend run dev",
     "syn:canary": "node producers/synthetics/canary.js",
     "pw:schedule": "node producers/playwright/test-harness.js --schedule",
-    "syn:schedule": "node producers/synthetics/canary.js --schedule"
+    "syn:schedule": "node producers/synthetics/canary.js --schedule",
+    "lint": "eslint .",
+    "test": "node --test \"tests/**/*.test.js\"",
+    "ci": "npm run validate-flows && npm run lint && npm test"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
@@ -20,5 +23,9 @@
     "node-cron": "^3.0.3",
     "pg": "^8.11.5",
     "playwright": "^1.61.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.7.0"
   }
 }

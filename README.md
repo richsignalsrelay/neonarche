@@ -123,6 +123,17 @@ All three schedules default to every 5 minutes, matching the dashboard's own pol
 
 A fact-write failure never blocks a producer's own run — both producers and the collector log the error and keep going on the next cycle rather than crashing the long-lived process.
 
+**CI and pre-commit checks (INFRA-002)**
+
+Three checks, run together via `npm run ci`: `flows.json` validation, ESLint (root Node code only — `dashboard/frontend` is a separate package with its own toolchain), and the unit test suite (`node --test`, no new test framework, no real Postgres needed — the idempotency tests mock the DB client).
+
+- **CI:** `.github/workflows/ci.yml` runs `npm run ci` on every push/PR to `main`.
+- **Pre-commit hook:** tracked in `.githooks/pre-commit` (git hooks in `.git/hooks` aren't committable, so this uses `core.hooksPath` instead). Activate once per clone:
+  ```
+  git config core.hooksPath .githooks
+  ```
+  After that, a commit is blocked if `flows.json` is invalid, lint fails, or a test fails — verified for real by deliberately breaking `flows.json` and confirming the commit was rejected before writing this.
+
 **Contributing**
 
 Feedback and issues welcome. This is an early-stage project — the entity model in particular is still open to change based on real adopter feedback.
