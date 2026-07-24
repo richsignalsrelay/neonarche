@@ -5,11 +5,14 @@
   "scripts": {
     "collector": "node collector/index.js",
     "collector:once": "node collector/index.js --once",
-    "validate-flows": "node scripts/validate-flows.js"
+    "validate-flows": "node scripts/validate-flows.js",
+    "fixture:serve": "node fixtures/local-app/server.js",
+    "test:pw": "node producers/playwright/test-harness.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
     "node-cron": "^3.0.3",
-    "pg": "^8.11.5"
+    "pg": "^8.11.5",
+    "playwright": "^1.61.1"
   }
 }
