@@ -43,7 +43,6 @@ Playwright and Synthetics take different paths to the same table on purpose — 
 
 **Dev-only** (exists to get to MVP, not part of the product):
 - `fixtures/local-app/` — throwaway login page standing in for a real staging app. A pilot customer brings their own; delete this once one exists. Nothing else in the repo depends on it.
-- Root-level planning docs (`STAGE_1_LINEAR_CONTEXT.md`, `ONE_PANE_CONTEXT.md`, etc.) — gitignored on purpose (`*.md` in `.gitignore`), never committed, not shipped.
 
 ---
 
