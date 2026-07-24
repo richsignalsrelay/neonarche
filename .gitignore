@@ -5,3 +5,4 @@ encore/
 .env
 node_modules/
 artifacts/
+dist/

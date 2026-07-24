@@ -13,7 +13,7 @@ const { upsertFact } = require('./idempotency');
 // Fact file is newline-delimited JSON (one fact object per line) — PW-001 appends a
 // line per test run. That avoids read-modify-write races on a single JSON array.
 const FACTS_FILE = path.join(__dirname, '..', 'artifacts', 'playwright-facts.json');
-const CRON_SCHEDULE = '*/5 * * * *';
+const CRON_SCHEDULE = process.env.COLL_SCHEDULE || '*/5 * * * *';
 const REQUIRED_FIELDS = ['flow_id', 'layer', 'status', 'execution_id', 'executed_at'];
 
 function readFacts(filePath) {

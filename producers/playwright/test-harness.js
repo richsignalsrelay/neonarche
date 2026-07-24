@@ -2,14 +2,25 @@
 // PW-001: Playwright test harness — runs login-happy-path, emits a fact
 'use strict';
 
+require('dotenv').config();
+
 const fs = require('fs');
 const path = require('path');
+const cron = require('node-cron');
 const { chromium } = require('playwright');
 
-// TODO(PW-002): move these to env vars (PW_TARGET_URL, PW_TEST_USER, PW_TEST_PASSWORD)
-const TARGET_URL = 'http://localhost:8080';
-const TEST_USER = 'test@example.com';
-const TEST_PASSWORD = 'test-password';
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value) {
+    console.error(`${name} is not set. Copy .env.example to .env and fill in ${name}.`);
+    process.exit(1);
+  }
+  return value;
+}
+
+const TARGET_URL = requireEnv('PW_TARGET_URL');
+const TEST_USER = requireEnv('PW_TEST_USER');
+const TEST_PASSWORD = requireEnv('PW_TEST_PASSWORD');
 
 const FLOW_ID = 'login-happy-path'; // hardcoded per PW-001 scope
 const FLOWS_FILE = path.join(__dirname, '..', '..', 'flows.json');
@@ -97,4 +108,11 @@ async function main() {
   }
 }
 
-main();
+if (process.argv.includes('--schedule')) {
+  const schedule = process.env.PW_SCHEDULE || '*/5 * * * *';
+  console.log(`Playwright producer scheduled: ${schedule}`);
+  main();
+  cron.schedule(schedule, main);
+} else {
+  main();
+}

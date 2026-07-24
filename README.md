@@ -62,6 +62,53 @@ cp .env.example .env
 
 `.env` is gitignored — never commit it. `DB_URL` is read by the collector and the dashboard API to connect to the `fact_store` Postgres database.
 
+**Running the Playwright producer**
+
+Set `PW_TEST_USER`, `PW_TEST_PASSWORD`, and `PW_TARGET_URL` (in `.env`, or exported in your shell), then:
+
+```
+node producers/playwright/test-harness.js
+```
+
+Against the local throwaway login fixture (`fixtures/local-app`), the defaults in `.env.example` already work — start it with `npm run fixture:serve` first. No credentials are hardcoded in the harness; it exits with an error naming the missing variable if any of the three aren't set.
+
+**Dashboard hosting: standalone, not a Backstage plugin (for now)**
+
+Stage 1's dashboard is a standalone Node/Express API (`dashboard/backend`, `GET /api/flow-status`) with a React frontend (`dashboard/frontend`) — not a Backstage plugin, even though the longer-term vision (see "What it does" above) is a Backstage-native scorecard.
+
+**Why:** a Backstage plugin means scaffolding a plugin package, wiring it into a Backstage app shell, and learning its catalog/entity APIs before a single fact can be displayed — real setup cost with no Stage 1 payoff, since there's no existing Backstage instance to plug into yet. A standalone API + React app gets a working dashboard in hours, not days, and the API shape (`/api/flow-status`) doesn't change when it's time to migrate — a plugin just becomes a new frontend consuming the same endpoint.
+
+**Stage 2:** once there's a real Backstage instance to embed in, wrap this API in a plugin card component. The fact store and API layer stay as-is.
+
+**Running the dashboard (DASH-005)**
+
+Two processes, two terminals:
+
+```
+npm run dashboard:api        # Express API — http://localhost:4000
+npm run dashboard:frontend   # Vite dev server — http://localhost:5173
+```
+
+Open **http://localhost:5173** — that's the dashboard. It polls `/api/flow-status?flow_id=login-happy-path` every 5 minutes (Vite proxies `/api` to the backend, so both need to be running). The API port is configurable via `DASHBOARD_API_PORT` if 4000 is taken.
+
+For Stage 1 this *is* the deployment — a real hosting target (Heroku/Vercel/etc.) isn't worth the setup cost yet per the no-pilot-customer, no-external-deadline constraint on this stage. Revisit once there's an actual audience for the dashboard beyond local dev.
+
+**Running continuously (SYN-002) — to actually accumulate data**
+
+Everything up to this point ran on-demand, one execution at a time. To let facts build up over time instead, run all of these long-lived, each in its own terminal (or a process manager — pm2, tmux, launchd, whatever you're comfortable with):
+
+```
+npm run collector          # syncs playwright-facts.json -> fact_store every 5 min
+npm run pw:schedule        # runs the Playwright producer every 5 min
+npm run syn:schedule       # runs the (stubbed) Synthetics canary every 5 min
+npm run dashboard:api      # :4000
+npm run dashboard:frontend # :5173
+```
+
+All three schedules default to every 5 minutes, matching the dashboard's own poll interval. Override with `COLL_SCHEDULE`, `PW_SCHEDULE`, `SYN_SCHEDULE` using standard cron syntax.
+
+A fact-write failure never blocks a producer's own run — both producers and the collector log the error and keep going on the next cycle rather than crashing the long-lived process.
+
 **Contributing**
 
 Feedback and issues welcome. This is an early-stage project — the entity model in particular is still open to change based on real adopter feedback.

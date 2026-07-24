@@ -7,10 +7,16 @@
     "collector:once": "node collector/index.js --once",
     "validate-flows": "node scripts/validate-flows.js",
     "fixture:serve": "node fixtures/local-app/server.js",
-    "test:pw": "node producers/playwright/test-harness.js"
+    "test:pw": "node producers/playwright/test-harness.js",
+    "dashboard:api": "node dashboard/backend/index.js",
+    "dashboard:frontend": "npm --prefix dashboard/frontend run dev",
+    "syn:canary": "node producers/synthetics/canary.js",
+    "pw:schedule": "node producers/playwright/test-harness.js --schedule",
+    "syn:schedule": "node producers/synthetics/canary.js --schedule"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
+    "express": "^5.2.1",
     "node-cron": "^3.0.3",
     "pg": "^8.11.5",
     "playwright": "^1.61.1"
