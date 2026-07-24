@@ -45,6 +45,9 @@ function buildResponse(flowId, rows) {
         last_status: row.status,
         last_executed_at: row.executed_at,
         last_execution_id: row.execution_id,
+        // BACK-006: null on pass; the literal error text on fail (not root-cause
+        // correlation — that's Change Lens, Stage 2+, and stays out of this).
+        last_error_message: row.error_message,
         recent_results: [],
       });
     }

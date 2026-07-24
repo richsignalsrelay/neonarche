@@ -47,6 +47,22 @@ function LayerRow({ layer }) {
       <div style={{ marginTop: 4 }}>
         <Sparkline results={layer.recent_results} />
       </div>
+      {layer.last_error_message && (
+        <div
+          style={{
+            marginTop: 8,
+            padding: 8,
+            background: '#fdecea',
+            color: '#611a15',
+            fontFamily: 'monospace',
+            fontSize: '0.85em',
+            whiteSpace: 'pre-wrap',
+            borderRadius: 4,
+          }}
+        >
+          {layer.last_error_message}
+        </div>
+      )}
     </div>
   );
 }
