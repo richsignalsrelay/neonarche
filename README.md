@@ -222,7 +222,7 @@ Three checks, run together via `npm run ci`: `flows.json` validation, ESLint (ro
 
 The longer-term goal is a Backstage plugin — **Flow Scorecard** — that tracks every critical user journey (login, checkout, account creation) as a first-class Backstage entity (`kind: Flow`), with a scorecard showing pass/fail across four layers: pre-merge (ephemeral environments), pipeline (this repo's Playwright), production (this repo's Synthetics, by region), and coverage (Jira Xray history). All four reference the same flow definition, so a failure at any layer traces back to one workflow — no cross-referencing four dashboards during an incident.
 
-Built open-core: the entity model, scorecard view, and fact producers (this repo) are open. Automated failure correlation (tracing a break to the responsible commit/PR/flag) and risk-scored release recommendations (promote/pause/rollback/disable-flag) are a separate paid tier. The open tier is real, standalone value on its own — adopting only that is a legitimate outcome, not a lesser one.
+The plan is open-core: the entity model, scorecard view, and fact producers (everything in this repo) are Apache 2.0. Automated failure correlation (tracing a break to the responsible commit/PR/flag, Stage 4's Change Lens) and risk-scored release recommendations (promote/pause/rollback/disable-flag, Stage 5's Risk Control) would eventually be a separate paid tier — but that's a future plan, not a current product. Nothing closed exists today; everything in this repo is open. What's here is real, standalone value on its own — adopting only this is a legitimate outcome, not a lesser one.
 
 **What Stage 2 actually adds, concretely:** multi-flow support (today: just `login-happy-path`), a Flow entity processor that materializes `flows.json` into the Backstage catalog, Soundcheck integration (facts as checks on those entities), a Change Lens stub (correlating failures to Git commits/PRs), coverage-confidence scoring from Xray, and — separately from all of that — replacing the Synthetics stub in this repo with a real deployed AWS CloudWatch Synthetics canary.
 
@@ -234,4 +234,4 @@ Feedback and issues welcome. This is an early-stage project — the entity model
 
 **License / Patent notice**
 
-**Patent pending**. This project is released under [LICENSE — TBD]. The open tier described above is intended for broad use; the paid tier is a separate, closed offering. See LICENSE for full terms.
+**Patent pending**. Everything in this repo is licensed under [Apache License 2.0](LICENSE), matching the license Backstage itself and its community-plugins ecosystem use. There is no separate closed or paid offering today — the "paid tier" described above is a future plan tied to Stage 4/5 of the roadmap, not a current product.
