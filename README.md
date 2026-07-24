@@ -52,6 +52,20 @@ json
     { "action": "assert", "selector": "#dashboard" }
   ]
 }
+**Repo layout: what ships vs. what's dev-only**
+
+**Ships** (the Stage 1 MVP surface — what a pilot customer would actually run):
+- `flows.json` — the manifest
+- `db/schema.sql` — the `fact_store` schema
+- `collector/` — syncs facts to Postgres
+- `producers/playwright/`, `producers/synthetics/` — the two producers (Synthetics is currently a local stub — see the header comment in `producers/synthetics/canary.js` — until there's a real AWS account to deploy to)
+- `dashboard/backend/`, `dashboard/frontend/` — the API + UI
+- `scripts/validate-flows.js` — the `flows.json` validator
+
+**Dev-only** (exists to get to MVP, not part of the product):
+- `fixtures/local-app/` — throwaway login page standing in for a real staging app. A pilot customer brings their own; delete this once one exists. Nothing else in the repo depends on it.
+- Root-level planning docs (`STAGE_1_LINEAR_CONTEXT.md`, `ONE_PANE_CONTEXT.md`, etc.) — gitignored on purpose (`*.md` in `.gitignore`), never committed, not shipped.
+
 **Local development setup**
 
 Copy `.env.example` to `.env` and fill in your local Postgres connection string:
