@@ -12,7 +12,7 @@ This is deliberately narrow. The long-term vision — a Backstage-native scoreca
 flows.json (single flow: login-happy-path)
        │
        ├─ Playwright producer ──→ artifacts/playwright-facts.json ──→ Collector ──┐
-       │  (producers/playwright)      (NDJSON, one line per run)     (COLL-001)   │
+       │  (producers/playwright)      (NDJSON, one line per run)     (collector/)  │
        │                                                                          ▼
        └─ Synthetics canary ─────────────────────────────────→ direct write ─→ Postgres
           (producers/synthetics,                                              fact_store
@@ -213,7 +213,7 @@ Three checks, run together via `npm run ci`: `flows.json` validation, ESLint (ro
 - **`EADDRINUSE`** on 8080 (fixture), 4000 (dashboard API), or 5173 (frontend) — something's already listening. Check `lsof -i :<port>`; if it's a stale process from an earlier session, kill it before restarting.
 - **`flow "login-happy-path" not found in .../flows.json`** — either you're running a script from the wrong working directory, or `flows.json` itself is missing/corrupted. Run `npm run validate-flows` to check it directly.
 - **Postgres connection refused** — confirm Postgres is actually running (`pg_isready`), and that `DB_URL` in `.env` points at the right host/port/db name.
-- **Timestamps look off by exactly your local UTC offset** — this bit us during TEST-001: `fact_store.executed_at`/`recorded_at` must stay `TIMESTAMPTZ`. If a future migration ever changes them back to plain `TIMESTAMP`, timestamps fed from app code (UTC ISO strings) and `NOW()` (session-local) will silently diverge by the session's timezone offset.
+- **Timestamps look off by exactly your local UTC offset** — this bit us during end-to-end testing: `fact_store.executed_at`/`recorded_at` must stay `TIMESTAMPTZ`. If a future migration ever changes them back to plain `TIMESTAMP`, timestamps fed from app code (UTC ISO strings) and `NOW()` (session-local) will silently diverge by the session's timezone offset.
 - **Pre-commit hook doesn't seem to run** — `core.hooksPath` is a per-clone git config, not something that travels with the repo automatically: `git config core.hooksPath .githooks`.
 - **A DB error logs a blank message** — shouldn't happen anymore (`lib/describe-error.js` handles it), but if you see it in new code: `pg`'s connection-refused errors are `AggregateError`, whose `.message` is empty by design — use `.code` or `.errors` instead of `.message` directly.
 
