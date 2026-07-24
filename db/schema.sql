@@ -8,8 +8,8 @@ CREATE TABLE fact_store (
   region VARCHAR(100),                   -- NULL for playwright, e.g. "eu-west-1" for synthetics
   status VARCHAR(20) NOT NULL,           -- "pass" or "fail"
   execution_id VARCHAR(255) NOT NULL,    -- unique run ID for traceability; every producer generates one
-  executed_at TIMESTAMP NOT NULL,        -- when the flow was executed
-  recorded_at TIMESTAMP NOT NULL DEFAULT NOW(), -- when the fact was ingested
+  executed_at TIMESTAMPTZ NOT NULL,      -- when the flow was executed
+  recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), -- when the fact was ingested
   error_message TEXT,                    -- populated when status = 'fail'
   duration_ms INT
 );
