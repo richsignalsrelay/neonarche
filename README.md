@@ -2,7 +2,7 @@
 
 Stage 1 answers one question for one flow: *is `login-happy-path` actually working?* A Playwright producer and a (currently stubbed) Synthetics canary both exercise the flow, write facts to a shared Postgres `fact_store`, and a small dashboard shows the current status for both, updated every 5 minutes.
 
-This is deliberately narrow. The long-term vision — a Backstage-native scorecard covering many flows across four validation layers, with automated failure correlation — is described under **Vision (Stage 2+)** below, but Stage 1 doesn't touch Backstage, Soundcheck, or multi-flow support at all. It proves the fact-flow contract (manifest → producer → store → dashboard) end to end on the smallest possible surface.
+This started deliberately narrow, and has grown one real step further since: `login-happy-path` is now registered as a `kind: Flow` entity in a local Backstage instance (`encore/`), with a live status card on its entity page. Soundcheck integration and multi-flow support still don't exist — see **Vision (Stage 2+)** below for what's still ahead. It proves the fact-flow contract (manifest → producer → store → Backstage) end to end on the smallest possible surface.
 
 ---
 
@@ -83,9 +83,9 @@ npm run dashboard:frontend   # Vite dev server — http://localhost:5173
 ```
 Open **http://localhost:5173**. It polls `/api/flow-status?flow_id=login-happy-path` every 5 minutes (Vite proxies `/api` to the backend, so both need to be running; override the API port with `DASHBOARD_API_PORT` if 4000 is taken).
 
-For Stage 1 this *is* the deployment — a real hosting target (Heroku/Vercel/etc.) isn't worth the setup cost yet, per the no-pilot-customer, no-external-deadline constraint on this stage.
+This is still useful on its own for local iteration without the full Backstage stack running, but it's no longer the primary way this flow's status gets viewed — see below.
 
-**Dashboard hosting: standalone, not a Backstage plugin (for now).** A plugin means scaffolding a plugin package and learning Backstage's catalog/entity APIs before a single fact can be displayed — real setup cost with no Stage 1 payoff, since there's no Backstage instance to plug into yet. Standalone gets a working dashboard in hours, and the API shape doesn't change when it's time to migrate — a plugin just becomes a new frontend consuming the same endpoint.
+**Dashboard hosting: standalone first, then a real Backstage plugin.** This standalone dashboard shipped first because scaffolding a plugin package and learning Backstage's catalog/entity APIs was real setup cost with no immediate payoff — at the time, this repo had no Backstage instance to plug into (that assumption turned out to be wrong; see the correction in `encore/`'s commit history). A real plugin (`encore/plugins/flow-status`) now exists and is the primary way to see this flow's status — it consumes this same API unchanged, exactly as planned. This standalone dashboard still works and is useful for local iteration without the full Backstage stack running.
 
 **Running continuously — to actually accumulate data.** Everything above runs on-demand, one execution at a time. To let facts build up over time instead, run all of these long-lived (each in its own terminal, or a process manager — pm2, tmux, launchd, whatever you're comfortable with):
 ```
