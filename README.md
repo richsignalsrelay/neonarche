@@ -1,4 +1,4 @@
-**One Pane, Three Stories — Stage 1 MVP**
+**Encore — Stage 1 MVP**
 
 Stage 1 answers one question for one flow: *is `login-happy-path` actually working?* A Playwright producer and a (currently stubbed) Synthetics canary both exercise the flow, write facts to a shared Postgres `fact_store`, and a small dashboard shows the current status for both, updated every 5 minutes.
 
