@@ -9,6 +9,7 @@ const path = require('path');
 const cron = require('node-cron');
 const { Client } = require('pg');
 const { upsertFact } = require('./idempotency');
+const { describeError } = require('../lib/describe-error');
 
 // Fact file is newline-delimited JSON (one fact object per line) — PW-001 appends a
 // line per test run. That avoids read-modify-write races on a single JSON array.
@@ -71,7 +72,7 @@ async function syncOnce() {
   try {
     await client.connect();
   } catch (err) {
-    console.error(`[${startedAt}] DB connection failed, will retry next cycle: ${err.message}`);
+    console.error(`[${startedAt}] DB connection failed, will retry next cycle: ${describeError(err)}`);
     return;
   }
 
@@ -86,7 +87,7 @@ async function syncOnce() {
         if (wasInserted) inserted += 1;
         else updated += 1;
       } catch (err) {
-        writeErrors.push(`execution_id=${fact.execution_id}: ${err.message}`);
+        writeErrors.push(`execution_id=${fact.execution_id}: ${describeError(err)}`);
       }
     }
   } finally {

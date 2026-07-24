@@ -21,6 +21,7 @@ const cron = require('node-cron');
 const { chromium } = require('playwright');
 const { Client } = require('pg');
 const { upsertFact } = require('../../collector/idempotency');
+const { describeError } = require('../../lib/describe-error');
 
 if (!process.env.DB_URL) {
   console.error('DB_URL is not set. Copy .env.example to .env and fill in DB_URL.');
@@ -120,7 +121,7 @@ async function main() {
       await client.end();
     }
   } catch (err) {
-    console.error(`canary completed but fact write failed: ${err.message}`);
+    console.error(`canary completed but fact write failed: ${describeError(err)}`);
   }
 
   if (fact.status === 'fail') process.exitCode = 1;

@@ -4,8 +4,11 @@
 
 require('dotenv').config();
 
+const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const { Pool } = require('pg');
+const { describeError } = require('../../lib/describe-error');
 
 if (!process.env.DB_URL) {
   console.error('DB_URL is not set. Copy .env.example to .env and fill in DB_URL.');
@@ -14,6 +17,12 @@ if (!process.env.DB_URL) {
 
 const pool = new Pool({ connectionString: process.env.DB_URL });
 const PORT = process.env.DASHBOARD_API_PORT || 4000;
+
+// Known flows come from the manifest, not fact_store — a flow with zero facts yet
+// (freshly added, producers haven't run) is a normal state, not a 404. Only a
+// flow_id absent from the manifest entirely is "not found" (STAB-001).
+const FLOWS_FILE = path.join(__dirname, '..', '..', 'flows.json');
+const KNOWN_FLOW_IDS = new Set(JSON.parse(fs.readFileSync(FLOWS_FILE, 'utf8')).flows.map((f) => f.id));
 
 const QUERY = `
   SELECT layer, region, status, execution_id, executed_at, duration_ms, error_message
@@ -61,13 +70,18 @@ app.get('/api/flow-status', async (req, res) => {
   try {
     result = await pool.query(QUERY, [flowId]);
   } catch (err) {
-    console.error(`DB query failed: ${err.message}`);
+    console.error(`DB query failed: ${describeError(err)}`);
     res.status(500).json({ error: 'internal error querying fact_store' });
     return;
   }
 
   if (result.rows.length === 0) {
-    res.status(404).json({ error: `no facts found for flow_id "${flowId}"` });
+    if (!KNOWN_FLOW_IDS.has(flowId)) {
+      res.status(404).json({ error: `no facts found for flow_id "${flowId}"` });
+      return;
+    }
+    // Known flow, no facts yet (e.g. freshly added, producers haven't run) — not an error.
+    res.json({ flow_id: flowId, layers: [] });
     return;
   }
 
